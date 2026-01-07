@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 ENV ELAN_HOME=/usr/local/elan
@@ -19,3 +20,7 @@ RUN curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init
     && rm -rf ${ELAN_HOME}/toolchains/*/src
 
 WORKDIR /opt/test-runner
+
+COPY bin/ bin/
+
+ENTRYPOINT ["/opt/test-runner/bin/run.sh"]
