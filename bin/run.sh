@@ -31,11 +31,18 @@ mkdir -p "${output_dir}"
 
 echo "${slug}: testing..."
 
+# Copy solution to a writable temp directory (lake needs to write build files)
+tmp_dir=$(mktemp -d)
+cp -r "${solution_dir}/." "${tmp_dir}"
+cd "${tmp_dir}"
+
 # Run the tests for the provided implementation file and redirect stdout and
 # stderr to capture it
-cd "${solution_dir}"
 test_output=$(lake test 2>&1)
 exit_code=$?
+
+# Clean up temp directory
+rm -rf "${tmp_dir}"
 
 # Write the results.json file based on the exit code of the command that was
 # just executed that tested the implementation file
