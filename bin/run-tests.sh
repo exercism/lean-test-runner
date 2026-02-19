@@ -18,7 +18,7 @@ for test_dir in tests/*; do
     test_dir_name=$(basename "${test_dir}")
     test_dir_path=$(realpath "${test_dir}")
 
-    filename=$(ls *.lean | grep -v "Test.lean" | head -n 1)
+    filename=$(ls "${test_dir_path}"/*.lean | grep -v "Test.lean" | head -n 1)
     pascal_slug=$(basename "$filename" .lean)
     kebab_slug=$(echo "$pascal_slug" | sed 's/\([A-Z]\)/-\1/g' | sed 's/^-//' | tr '[:upper:]' '[:lower:]')
 
