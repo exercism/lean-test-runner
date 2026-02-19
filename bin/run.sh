@@ -44,6 +44,7 @@ done
 
 cp -r "${solution_dir}/." "${tmp_dir}"
 rm "${tmp_dir}/lakefile.toml"
+rm "${tmp_dir}/lake-manifest.json"
 mv "${tmp_dir}/${pascal_slug}.lean" "${tmp_dir}/Solution.lean"
 mv "${tmp_dir}/${pascal_slug}Test.lean" "${tmp_dir}/ExerciseTest.lean"
 sed -i "s/import ${pascal_slug}/import Solution/g" "${tmp_dir}/ExerciseTest.lean"

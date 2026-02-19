@@ -18,7 +18,7 @@ for test_dir in tests/*; do
     test_dir_name=$(basename "${test_dir}")
     test_dir_path=$(realpath "${test_dir}")
 
-    bin/run.sh "${test_dir_name}" "${test_dir_path}" "${test_dir_path}"
+    bin/run.sh "hello-world" "${test_dir_path}" "${test_dir_path}"
 
     file="results.json"
     expected_file="expected_${file}"
