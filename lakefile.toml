@@ -1,0 +1,15 @@
+name = "lean-test"
+version = "0.1.0"
+defaultTargets = ["ExerciseTest"]
+testDriver = "ExerciseTest"
+
+[[lean_lib]]
+name = "LeanTest"
+srcDir = "vendor"
+
+[[lean_lib]]
+name = "Solution"
+
+[[lean_exe]]
+name = "ExerciseTest"
+root = "ExerciseTest"

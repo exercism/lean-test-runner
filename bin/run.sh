@@ -33,7 +33,23 @@ echo "${slug}: testing..."
 
 # Copy solution to a writable temp directory (lake needs to write build files)
 tmp_dir=$(mktemp -d)
+
+words=$(echo "$slug" | tr '-' ' ')
+pascal_slug=""
+for word in $words; do
+    rest_of_word="${word#?}"
+    first_char=$(echo "${word%${rest_of_word}}" | tr '[:lower:]' '[:upper:]')
+    pascal_slug="${pascal_slug}${first_char}${rest_of_word}"
+done
+
 cp -r "${solution_dir}/." "${tmp_dir}"
+rm "${tmp_dir}/lakefile.toml"
+mv "${tmp_dir}/${pascal_slug}.lean" "${tmp_dir}/Solution.lean"
+mv "${tmp_dir}/${pascal_slug}Test.lean" "${tmp_dir}/ExerciseTest.lean"
+sed -i "s/[[:space:]]*import[[:space:]]\+${pascal_slug}/import Solution/g" "${tmp_dir}/ExerciseTest.lean"
+
+cp -r "/opt/test-runner/." "${tmp_dir}"
+
 cd "${tmp_dir}"
 
 # Run the tests for the provided implementation file and redirect stdout and
