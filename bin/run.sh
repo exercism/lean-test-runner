@@ -37,8 +37,8 @@ tmp_dir=$(mktemp -d)
 words=$(echo "$slug" | tr '-' ' ')
 pascal_slug=""
 for word in $words; do
-    first_char=$(echo "$word" | cut -c1 | tr '[:lower:]' '[:upper:]')
-    rest_of_word=$(echo "$word" | cut -c2-)
+    first_char=$(echo "${word%"${word#?}"}" | tr '[:lower:]' '[:upper:]')
+    rest_of_word="${word#?}"
     pascal_slug="${pascal_slug}${first_char}${rest_of_word}"
 done
 

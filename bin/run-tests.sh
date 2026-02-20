@@ -13,14 +13,23 @@
 
 exit_code=0
 
+solution_file () {
+    for file in "${1}"/*.lean; do
+        [ "${file}" = *Test.lean ] && continue
+        printf '%s\n' "${file}"
+        return
+    done
+}
+
 # Iterate over all test directories
 for test_dir in tests/*; do
     test_dir_name=$(basename "${test_dir}")
     test_dir_path=$(realpath "${test_dir}")
 
-    filename=$(ls "${test_dir_path}"/*.lean | grep -v "Test.lean" | head -n 1)
-    pascal_slug=$(basename "$filename" .lean)
-    kebab_slug=$(echo "$pascal_slug" | sed 's/\([A-Z]\)/-\1/g' | sed 's/^-//' | tr '[:upper:]' '[:lower:]')
+    filename=$(solution_file "${test_dir_path}")
+    pascal_slug=${filename##*/}
+    pascal_slug=${pascal_slug%.lean}
+    kebab_slug=$(echo "$pascal_slug" | sed 's/\([A-Z]\)/-\1/g; s/^-//' | tr '[:upper:]' '[:lower:]')
 
     bin/run.sh "${kebab_slug}" "${test_dir_path}" "${test_dir_path}"
 
