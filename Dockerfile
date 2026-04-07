@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV ELAN_HOME=/usr/local/elan
 ENV PATH="${ELAN_HOME}/bin:${PATH}"
 
-RUN curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --no-modify-path --default-toolchain leanprover/lean4:v4.25.2 \
-    && elan default leanprover/lean4:v4.25.2 \
+RUN curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --no-modify-path --default-toolchain leanprover/lean4:v4.29.0 \
+    && elan default leanprover/lean4:v4.29.0 \
     && lean --version \
-    && rm -rf "${ELAN_HOME}/toolchains/leanprover--lean4---v4.25.2/lib/lean/Lean" \
-    && rm -rf "${ELAN_HOME}/toolchains/leanprover--lean4---v4.25.2/src/lean/Lean" 
+    && rm -rf "${ELAN_HOME}/toolchains/leanprover--lean4---v4.29.0/lib/lean/Lean" \
+    && rm -rf "${ELAN_HOME}/toolchains/leanprover--lean4---v4.29.0/src/lean/Lean" 
     
 WORKDIR /opt/test-runner
 COPY lean-toolchain lakefile.toml ./
