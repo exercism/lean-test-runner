@@ -54,7 +54,7 @@ cd "${tmp_dir}"
 
 # Run the tests for the provided implementation file and redirect stdout and
 # stderr to capture it
-test_output=$(lake test 2>&1)
+test_output=$(lake --wfail test 2>&1)
 exit_code=$?
 
 # Clean up temp directory
