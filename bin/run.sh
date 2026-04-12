@@ -43,6 +43,11 @@ for word in $words; do
 done
 
 cp -r "${solution_dir}/." "${tmp_dir}"
+if [ -f "${solution_dir}/Extra.lean" ]; then
+    cp "${solution_dir}/Extra.lean" "${tmp_dir}/Extra.lean"
+else
+    touch "${tmp_dir}/Extra.lean"
+fi
 rm "${tmp_dir}/lakefile.toml"
 mv "${tmp_dir}/${pascal_slug}.lean" "${tmp_dir}/Solution.lean"
 mv "${tmp_dir}/${pascal_slug}Test.lean" "${tmp_dir}/ExerciseTest.lean"
@@ -54,7 +59,7 @@ cd "${tmp_dir}"
 
 # Run the tests for the provided implementation file and redirect stdout and
 # stderr to capture it
-test_output=$(lake test 2>&1)
+test_output=$(lake --wfail test 2>&1)
 exit_code=$?
 
 # Clean up temp directory
