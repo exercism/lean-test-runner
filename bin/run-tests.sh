@@ -37,15 +37,45 @@ for test_dir in tests/*; do
     expected_file="expected_${file}"
     echo "${test_dir_name}: comparing ${file} to ${expected_file}"
 
-    # Compare status field (must match exactly)
-    actual_status=$(jq -r '.status' "${test_dir_path}/${file}")
-    expected_status=$(jq -r '.status' "${test_dir_path}/${expected_file}")
+    actual="${test_dir_path}/${file}"
+    expected="${test_dir_path}/${expected_file}"
+
+    # Compare top-level status field (must match exactly)
+    actual_status=$(jq -r '.status' "${actual}")
+    expected_status=$(jq -r '.status' "${expected}")
 
     if [ "${actual_status}" != "${expected_status}" ]; then
         echo "Status mismatch: expected '${expected_status}', got '${actual_status}'"
         exit_code=1
     else
         echo "${test_dir_name}: status OK (${actual_status})"
+    fi
+
+    # Compare top-level message
+    if jq -e '.message != null' "${expected}" > /dev/null; then
+        actual_message=$(jq -r '.message' "${actual}")
+        expected_message=$(jq -r '.message' "${expected}")
+        if [ "${actual_message}" != "${expected_message}" ]; then
+            echo "Message mismatch: expected '${expected_message}', got '${actual_message}'"
+            exit_code=1
+        fi
+    fi
+
+    # Compare the `tests` array in order
+    actual_tests=$(jq -c '.tests // []' "${actual}")
+    expected_tests=$(jq -c '.tests // []' "${expected}")
+
+    if [ "${actual_tests}" != "${expected_tests}" ]; then
+        echo "${test_dir_name}: tests array mismatch"
+        expected_pretty=$(mktemp)
+        actual_pretty=$(mktemp)
+        jq '.tests // []' "${expected}" > "${expected_pretty}"
+        jq '.tests // []' "${actual}" > "${actual_pretty}"
+        diff "${expected_pretty}" "${actual_pretty}"
+        rm -f "${expected_pretty}" "${actual_pretty}"
+        exit_code=1
+    else
+        echo "${test_dir_name}: tests array OK"
     fi
 done
 

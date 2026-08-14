@@ -16,7 +16,7 @@ WORKDIR /opt/test-runner
 COPY lean-toolchain lakefile.toml ./
 COPY vendor/ ./vendor/
 
-RUN lake build LeanTest
+RUN lake build LeanTest:static
 
 FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
 

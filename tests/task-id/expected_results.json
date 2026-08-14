@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "status": "pass",
+  "message": null,
+  "tests": [
+    {
+      "name": "Expected oven time in minutes",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual 40 Lasagna.expectedMinutesInOven",
+      "task_id": 1
+    },
+    {
+      "name": "Remaining oven time in minutes",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual 10 (Lasagna.remainingMinutesInOven 30)",
+      "task_id": 2
+    }
+  ]
+}

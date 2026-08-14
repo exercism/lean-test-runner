@@ -1,4 +1,85 @@
 {
-  "version": 1,
-  "status": "fail"
+  "version": 3,
+  "status": "fail",
+  "message": null,
+  "tests": [
+    {
+      "name": "Missed target",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual 0 (Darts.score (-9) 9)"
+    },
+    {
+      "name": "On the outer circle",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual 1 (Darts.score 0 10)"
+    },
+    {
+      "name": "On the middle circle",
+      "status": "fail",
+      "message": "Expected: 5\nActual: 1",
+      "test_code": "return assertEqual 5 (Darts.score (-5) 0)"
+    },
+    {
+      "name": "On the inner circle",
+      "status": "fail",
+      "message": "Expected: 10\nActual: 1",
+      "test_code": "return assertEqual 10 (Darts.score 0 (-1))"
+    },
+    {
+      "name": "Exactly on center",
+      "status": "fail",
+      "message": "Expected: 10\nActual: 1",
+      "test_code": "return assertEqual 10 (Darts.score 0 0)"
+    },
+    {
+      "name": "Near the center",
+      "status": "fail",
+      "message": "Expected: 10\nActual: 1",
+      "test_code": "return assertEqual 10 (Darts.score (-0.1) (-0.1))"
+    },
+    {
+      "name": "Just within the inner circle",
+      "status": "fail",
+      "message": "Expected: 10\nActual: 1",
+      "test_code": "return assertEqual 10 (Darts.score 0.7 0.7)"
+    },
+    {
+      "name": "Just outside the inner circle",
+      "status": "fail",
+      "message": "Expected: 5\nActual: 1",
+      "test_code": "return assertEqual 5 (Darts.score 0.8 (-0.8))"
+    },
+    {
+      "name": "Just within the middle circle",
+      "status": "fail",
+      "message": "Expected: 5\nActual: 1",
+      "test_code": "return assertEqual 5 (Darts.score (-3.5) 3.5)"
+    },
+    {
+      "name": "Just outside the middle circle",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual 1 (Darts.score (-3.6) (-3.6))"
+    },
+    {
+      "name": "Just within the outer circle",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual 1 (Darts.score (-7.0) 7.0)"
+    },
+    {
+      "name": "Just outside the outer circle",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual 0 (Darts.score 7.1 (-7.1))"
+    },
+    {
+      "name": "Asymmetric position between the inner and middle circles",
+      "status": "fail",
+      "message": "Expected: 5\nActual: 1",
+      "test_code": "return assertEqual 5 (Darts.score 0.5 (-4))"
+    }
+  ]
 }
