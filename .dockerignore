@@ -1,4 +1,5 @@
 .git/
+.lake/
 .appends/
 .github/
 .gitattributes

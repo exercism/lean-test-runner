@@ -1,4 +1,13 @@
 {
-  "version": 1,
-  "status": "pass"
+  "version": 3,
+  "status": "pass",
+  "message": null,
+  "tests": [
+    {
+      "name": "Say Hi!",
+      "status": "pass",
+      "message": null,
+      "test_code": "return assertEqual \"Hello, World!\" HelloWorld.hello"
+    }
+  ]
 }

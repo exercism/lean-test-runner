@@ -11,11 +11,12 @@
 # Output:
 # Writes the test results to a results.json file in the passed-in output directory.
 # The test results are formatted according to the specifications at https://github.com/exercism/docs/blob/main/building/tooling/test-runners/interface.md
+# (interface version 3).
 
 # Example:
 # ./bin/run.sh two-fer path/to/solution/folder/ path/to/output/directory/
 
-# If any required arguments is missing, print the usage and exit
+# If any required argument is missing, print the usage and exit
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
     echo "usage: ./bin/run.sh exercise-slug path/to/solution/folder/ path/to/output/directory/"
     exit 1
@@ -33,6 +34,7 @@ echo "${slug}: testing..."
 
 # Copy solution to a writable temp directory (lake needs to write build files)
 tmp_dir=$(mktemp -d)
+trap 'rm -rf "${tmp_dir}"' EXIT
 
 words=$(echo "$slug" | tr '-' ' ')
 pascal_slug=""
@@ -57,25 +59,27 @@ cp -r "/opt/test-runner/." "${tmp_dir}"
 
 cd "${tmp_dir}"
 
-# Run the tests for the provided implementation file and redirect stdout and
-# stderr to capture it
+# LeanTest.runTestSuites writes results.json directly to EXERCISM_OUTPUT_DIR
+# EXERCISM_TEST_FILE is used to capture `test_code`
+export EXERCISM_OUTPUT_DIR="${output_dir}"
+export EXERCISM_TEST_FILE="${tmp_dir}/ExerciseTest.lean"
+
+# Run the tests and capture output to be used in case of compile-error
 test_output=$(lake --wfail test 2>&1)
-exit_code=$?
 
-# Clean up temp directory
-rm -rf "${tmp_dir}"
-
-# Write the results.json file based on the exit code of the command that was
-# just executed that tested the implementation file
-if [ ${exit_code} -eq 0 ]; then
-    jq -n '{version: 1, status: "pass"}' > ${results_file}
-else
-    # Check if this is a compilation/syntax error vs test failure
-    if echo "${test_output}" | grep -q "error:"; then
-        jq -n --arg output "${test_output}" '{version: 1, status: "error", message: $output}' > ${results_file}
-    else
-        jq -n --arg output "${test_output}" '{version: 1, status: "fail", message: $output}' > ${results_file}
+# results.json is written already formatted by LeanTest once the test binary runs to completion
+if [ ! -f "${results_file}" ]; then
+    # No results.json may indicate a compile-time error
+    # We check if there is an error message and extract it from the captured output
+    cleaned=$(printf '%s\n' "${test_output}" | awk '
+        /^error:/ { capture=1 }
+        /^(✔|✖|trace:|info:|Some required targets|error: (Lean exited|build failed))/ { capture=0 }
+        capture { print }
+    ' | sed "s#${tmp_dir}/##g")
+    if [ -z "${cleaned}" ]; then
+        cleaned="No tests were executed"
     fi
+    jq -n --arg msg "${cleaned}" '{version: 3, status: "error", message: $msg}' > "${results_file}"
 fi
 
 echo "${slug}: done"

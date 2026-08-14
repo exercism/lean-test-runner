@@ -1,4 +1,13 @@
 {
-  "version": 1,
-  "status": "fail"
+  "version": 3,
+  "status": "fail",
+  "message": null,
+  "tests": [
+    {
+      "name": "Say Hi!",
+      "status": "fail",
+      "message": "Expected: \"Hello, World!\"\nActual: \"Goodbye, World!\"",
+      "test_code": "return assertEqual \"Hello, World!\" HelloWorld.hello"
+    }
+  ]
 }
