@@ -32,6 +32,14 @@ mkdir -p "${output_dir}"
 
 echo "${slug}: testing..."
 
+# On a cold page cache, most of a run goes on reading the toolchain from disk, mostly
+# through page faults on memory-mapped files, which read a little at a time.
+# Reading the files every run needs (listed at image build) with several parallel
+# readers loads them into the page cache much faster, while the run gets going.
+if [ -f /opt/test-runner/prefetch-files.txt ]; then
+    xargs -P 8 -n 64 cat < /opt/test-runner/prefetch-files.txt > /dev/null 2>&1 &
+fi
+
 # Copy solution to a writable temp directory (lake needs to write build files)
 tmp_dir=$(mktemp -d)
 trap 'rm -rf "${tmp_dir}"' EXIT
@@ -54,6 +62,14 @@ rm "${tmp_dir}/lakefile.toml"
 mv "${tmp_dir}/${pascal_slug}.lean" "${tmp_dir}/Solution.lean"
 mv "${tmp_dir}/${pascal_slug}Test.lean" "${tmp_dir}/ExerciseTest.lean"
 sed -i "s/[[:space:]]*import[[:space:]]\+${pascal_slug}/import Solution/g" "${tmp_dir}/ExerciseTest.lean"
+
+# Build and run the tests without lake (see bin/fast-run.sh). If that fails for any
+# reason, fall through to `lake test`, which reports errors exactly as before.
+if /opt/test-runner/bin/fast-run.sh "${tmp_dir}" "${output_dir}"; then
+    echo "${slug}: done"
+    exit 0
+fi
+rm -rf "${tmp_dir}/.fast-build"
 
 cp -r "/opt/test-runner/." "${tmp_dir}"
 
