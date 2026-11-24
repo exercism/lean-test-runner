@@ -31,4 +31,15 @@ COPY --from=builder /opt/test-runner /opt/test-runner
 
 WORKDIR /opt/test-runner
 COPY . .
+
+# List the toolchain files every run reads, for bin/run.sh to load into the page cache
+# at the start of each run: the Init library's .olean, .ir and related files, the shared
+# Lean library, and clang's LLVM libraries and linker.
+RUN toolchain=$(lean --print-prefix) \
+    && { echo "${toolchain}/lib/lean/libleanshared.so"; \
+         find "${toolchain}/lib/lean" -maxdepth 1 -type f -name 'Init.*' ! -name '*.ilean'; \
+         find "${toolchain}/lib/lean/Init" -type f ! -name '*.ilean'; \
+         find "${toolchain}/lib" -maxdepth 1 -type f \( -name 'libLLVM.so.*' -o -name 'libclang-cpp.so.*' \); \
+         echo "${toolchain}/bin/ld.lld"; } > /opt/test-runner/prefetch-files.txt \
+    && xargs ls > /dev/null < /opt/test-runner/prefetch-files.txt
 ENTRYPOINT ["/opt/test-runner/bin/run.sh"]
